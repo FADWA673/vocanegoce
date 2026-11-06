@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche Intelligente - VocaNégoce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .search-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .search-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-input {
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 4px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        
+        
+        .search-filters {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .result-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.active {
+            background-color: #f8f9fa;
+        }
+        
+        .search-suggestions {
+            background: #e3f2fd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .suggestion-chip {
+            display: inline-block;
+            background: #2196f3;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .suggestion-chip:hover {
+            background: #1976d2;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="container">
+            <!-- En-tête -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <h1 class="text-white mb-3">
+                        <i class="fas fa-search me-2"></i>
+                        Recherche Intelligente VocaNégoce
+                    </h1>
+                    <p class="text-white-50">
+                        Trouvez rapidement vos produits, clients et commandes avec notre IA
+                    </p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Retour au tableau de bord
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Interface de recherche principale -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="search-card p-4">
+                        <!-- Barre de recherche -->
+                        <div class="position-relative mb-3">
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    id="searchInput" 
+                                    class="form-control search-input" 
+                                    placeholder="Recherchez un produit, client, commande..."
+                                    autocomplete="off"
+                                >
+                                <button class="btn btn-primary voice-btn" id="voiceSearchBtn" type="button">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Dropdown d'auto-complétion -->
+                            <div id="autocompleteDropdown" class="autocomplete-dropdown" style="display: none;">
+                                <!-- Les suggestions apparaîtront ici -->
+                            </div>
+                        </div>
+                        
+                        <!-- Filtres de recherche -->
+                        <div class="search-filters">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label">Type de recherche</label>
+                                    <select class="form-select" id="searchType">
+                                        <option value="all">Tout</option>
+                                        <option value="produits">Produits</option>
+                                        <option value="clients">Clients</option>
+                                        <option value="commandes">Commandes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Catégorie</label>
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="">Toutes catégories</option>
+                                        <option value="acide">Acides</option>
+                                        <option value="base">Bases</option>
+                                        <option value="solvant">Solvants</option>
+                                        <option value="reactif">Réactifs</option>
+                                        <option value="catalyseur">Catalyseurs</option>
+                                        <option value="autre">Autres</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Tri</label>
+                                    <select class="form-select" id="sortOrder">
+                                        <option value="relevance">Pertinence</option>
+                                        <option value="name">Nom A-Z</option>
+                                        <option value="price">Prix</option>
+                                        <option value="date">Date</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Suggestions de recherche -->
+                        <div id="searchSuggestions" class="search-suggestions" style="display: none;">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Suggestions</h6>
+                            <div id="suggestionChips">
+                                <!-- Les suggestions apparaîtront ici -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Résultats de recherche -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="searchResults" style="display: none;">
+                        <div class="search-card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 id="resultsTitle">Résultats de recherche</h5>
+                                <span id="resultsCount" class="badge bg-primary"></span>
+                            </div>
+                            <div id="resultsContainer">
+                                <!-- Les résultats apparaîtront ici -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recherches récentes -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="search-card p-4">
+                        <h5><i class="fas fa-history me-2"></i>Recherches récentes</h5>
+                        <div id="recentSearches">
+                            <!-- Les recherches récentes apparaîtront ici -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Code JavaScript pour la recherche intelligente
+        console.log('Interface de recherche chargée');
+        
+        // Fonction de recherche simple pour test
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            console.log('Recherche:', e.target.value);
+        });
+    </script>
+</body>
+</html>

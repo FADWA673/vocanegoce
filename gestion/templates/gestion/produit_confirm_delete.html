@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer {{ produit.nom }} - VocaNégoce{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <!-- En-tête moderne -->
+    <div class="detail-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1><i class="fas fa-box-open me-3"></i>Suppression Produit</h1>
+                    <p class="subtitle mb-0">Confirmation de suppression pour {{ produit.nom }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Contenu principal -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Carte d'avertissement -->
+            <div class="detail-card mb-4" style="border-left: 5px solid #dc3545;">
+                <div class="detail-card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Zone Dangereuse - Suppression Définitive</strong>
+                </div>
+                <div class="detail-card-body">
+                    <div class="alert alert-warning border-0" style="background: linear-gradient(135deg, #fff3cd 0%, #fef7e0 100%);">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Attention - Action Irréversible</h6>
+                                <p class="mb-0">Cette suppression est définitive et ne peut pas être annulée.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations du produit à supprimer -->
+            <div class="detail-card mb-4">
+                <div class="detail-card-header">
+                    <i class="fas fa-box me-2"></i>
+                    <strong>Produit à Supprimer</strong>
+                </div>
+                <div class="detail-card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="p-4 rounded" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                                <i class="fas fa-cube" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                <h5 class="mb-0">{{ produit.nom }}</h5>
+                                {% if produit.categorie %}
+                                    <p class="mb-0 opacity-75">{{ produit.get_categorie_display }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="info-row">
+                                        <div class="info-label">
+                                            <i class="fas fa-euro-sign"></i>
+                                            Prix Unitaire
+                                        </div>
+                                        <div class="info-value">{{ produit.prix|floatformat:2 }} €</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-6">
+                                    <div class="info-row">
+                                        <div class="info-label">
+                                            <i class="fas fa-warehouse"></i>
+                                            Stock
+                                        </div>
+                                        <div class="info-value">
+                                            {{ produit.stock }}{% if produit.unite %} {{ produit.unite }}{% endif %}
+                                            {% if produit.stock <= 10 %}
+                                                <span class="stock-indicator stock-low ms-2">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    Stock faible
+                                                </span>
+                                            {% elif produit.stock <= 50 %}
+                                                <span class="stock-indicator stock-medium ms-2">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    Stock moyen
+                                                </span>
+                                            {% else %}
+                                                <span class="stock-indicator stock-good ms-2">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Stock suffisant
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% if produit.description %}
+                                <div class="col-12">
+                                    <div class="info-row">
+                                        <div class="info-label">
+                                            <i class="fas fa-align-left"></i>
+                                            Description
+                                        </div>
+                                        <div class="info-value">{{ produit.description|truncatechars:100 }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if produit.date_creation %}
+                                <div class="col-sm-6">
+                                    <div class="info-row">
+                                        <div class="info-label">
+                                            <i class="fas fa-calendar-plus"></i>
+                                            Créé le
+                                        </div>
+                                        <div class="info-value">{{ produit.date_creation|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if produit.date_modification %}
+                                <div class="col-sm-6">
+                                    <div class="info-row">
+                                        <div class="info-label">
+                                            <i class="fas fa-calendar-edit"></i>
+                                            Modifié le
+                                        </div>
+                                        <div class="info-value">{{ produit.date_modification|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+            <!-- Conséquences de la suppression -->
+            <div class="detail-card mb-4">
+                <div class="detail-card-header text-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Conséquences de la Suppression</strong>
+                </div>
+                <div class="detail-card-body">
+                    <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle text-info me-3 mt-1"></i>
+                            <div>
+                                <h6 class="mb-2">Les éléments suivants seront également affectés :</h6>
+                                <ul class="mb-0">
+                                    <li>Toute la valeur stock sera perdue définitivement</li>
+                                    <li>Les commandes en cours contenant ce produit seront impactées</li>
+                                    <li>L'historique des ventes pour ce produit sera supprimé</li>
+                                    <li>Les statistiques et rapports ne pourront plus inclure ce produit</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire de confirmation -->
+            <div class="detail-card">
+                <div class="detail-card-header bg-danger text-white">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Confirmation Finale</strong>
+                </div>
+                <div class="detail-card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-danger border-0" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h6 class="mb-1">Confirmez votre intention</h6>
+                                    <p class="mb-0">Êtes-vous absolument certain de vouloir supprimer ce produit ?</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label fw-bold" for="confirmDelete">
+                                    Je comprends que cette action est irréversible
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <a href="{% url 'produit_detail' produit.id %}" class="action-btn btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Annuler et Retourner
+                            </a>
+                            <button type="submit" class="action-btn btn-danger-gradient" id="deleteBtn" disabled>
+                                <i class="fas fa-trash-alt me-2"></i>Supprimer Définitivement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Variables JavaScript pour les données Django -->
+{{ produit.prix|default:0|json_script:"produit-prix" }}
+{{ produit.stock|default:0|json_script:"produit-stock" }}
+
+<style>
+/* Styles spécifiques pour la page de suppression produit */
+.alert-heading {
+    color: inherit;
+    font-weight: 600;
+}
+
+.form-check-input:checked {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+#deleteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#deleteBtn:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
+}
+
+.info-row:hover {
+    background: rgba(220, 53, 69, 0.02);
+}
+
+/* Animation pour attirer l'attention sur le bouton de suppression */
+@keyframes danger-pulse {
+    0% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+    50% { box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5); }
+    100% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+}
+
+#deleteBtn:not(:disabled):hover {
+    animation: danger-pulse 1.5s infinite;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    // Récupération sécurisée des données Django
+    const prixData = document.getElementById('produit-prix');
+    const stockData = document.getElementById('produit-stock');
+    
+    if (prixData && stockData) {
+        const prix = parseFloat(JSON.parse(prixData.textContent)) || 0;
+        const stock = parseInt(JSON.parse(stockData.textContent)) || 0;
+        
+        // Calcul et affichage de la valeur totale
+        const calculatedValueElement = document.querySelector('.calculated-value');
+        if (calculatedValueElement) {
+            if (prix > 0 && stock > 0) {
+                const valeurTotale = (prix * stock).toFixed(2);
+                calculatedValueElement.textContent = valeurTotale;
+            } else {
+                calculatedValueElement.textContent = '0.00';
+            }
+        }
+        
+        // Mise à jour complète de l'affichage
+        const stockValueElement = document.getElementById('stockValue');
+        if (stockValueElement) {
+            if (prix > 0 && stock > 0) {
+                const valeurTotale = (prix * stock).toFixed(2);
+                stockValueElement.innerHTML = `${prix.toFixed(2)} × ${stock} = <span class="fw-bold">${valeurTotale} €</span>`;
+            } else {
+                stockValueElement.innerHTML = `<span class="text-muted">Aucune valeur calculable</span>`;
+            }
+        }
+    }
+    
+    // Gestion de la checkbox de confirmation
+    if (checkbox && deleteBtn) {
+        checkbox.addEventListener('change', function() {
+            deleteBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Confirmation supplémentaire au clic
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            if (!confirm('DERNIÈRE CONFIRMATION : Voulez-vous vraiment supprimer ce produit de façon définitive ?')) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

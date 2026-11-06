@@ -1,0 +1,611 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ produit.nom }} - Détail Produit{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2d5a3d;
+        --primary-light: #4a7c59;
+        --accent-color: #28a745;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --light-bg: #f8fafb;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1200px;
+    }
+
+    /* Header Section */
+    .product-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(50px, -50px);
+    }
+
+    .product-header .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .product-header .subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .status-badge::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    .status-actif { 
+        background: linear-gradient(45deg, var(--success-color), #2ecc71);
+        color: white;
+    }
+    
+    .status-actif::before { background: #27ae60; }
+
+    .status-inactif { 
+        background: linear-gradient(45deg, #6c757d, #495057);
+        color: white;
+    }
+
+    .status-inactif::before { background: #6c757d; }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    /* Card Styles */
+    .info-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+    }
+
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid #f1f3f4;
+    }
+
+    .card-header h5 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .card-header .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.8rem;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    /* Info Rows */
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #f8f9fa;
+        transition: var(--transition);
+    }
+
+    .info-row:hover {
+        background-color: #f8f9fa;
+        margin: 0 -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-radius: 8px;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* Product Image */
+    .product-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+    }
+
+    .product-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Price Display */
+    .price-display {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--success-color);
+    }
+
+    /* Stock Indicators */
+    .stock-indicator {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-weight: 600;
+        display: inline-block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stock-ok {
+        background: linear-gradient(45deg, var(--success-color), #2ecc71);
+        color: white;
+    }
+
+    .stock-low {
+        background: linear-gradient(45deg, var(--warning-color), #e67e22);
+        color: white;
+    }
+
+    .stock-out {
+        background: linear-gradient(45deg, var(--danger-color), #c0392b);
+        color: white;
+    }
+
+    /* Orders Table */
+    .orders-table {
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 1.5rem;
+    }
+
+    .table {
+        margin: 0;
+        border: none;
+    }
+
+    .table thead th {
+        background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        color: var(--primary-color);
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        border-color: #f1f3f4;
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Order Status */
+    .order-status {
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-en_attente { 
+        background: linear-gradient(45deg, var(--warning-color), #e67e22);
+        color: white;
+    }
+    .status-confirmee { 
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: white;
+    }
+    .status-en_preparation { 
+        background: linear-gradient(45deg, #9b59b6, #8e44ad);
+        color: white;
+    }
+    .status-expediee { 
+        background: linear-gradient(45deg, #1abc9c, #16a085);
+        color: white;
+    }
+    .status-livree { 
+        background: linear-gradient(45deg, var(--success-color), #2ecc71);
+        color: white;
+    }
+    .status-annulee { 
+        background: linear-gradient(45deg, var(--danger-color), #c0392b);
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Action Buttons */
+    .actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .btn {
+        border-radius: 25px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: var(--transition);
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(45, 90, 61, 0.3);
+    }
+
+    .btn-warning {
+        background: linear-gradient(45deg, var(--warning-color), #e67e22);
+        border-color: var(--warning-color);
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-sm {
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .btn-outline-success {
+        border-color: var(--success-color);
+        color: var(--success-color);
+    }
+
+    .btn-outline-success:hover {
+        background: var(--success-color);
+        border-color: var(--success-color);
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .product-header {
+            padding: 1.5rem;
+        }
+        
+        .product-header .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .info-card {
+            padding: 1rem;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+        
+        .actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Animation pour l'entrée */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <!-- Header -->
+    <div class="product-header">
+        <div class="page-title">
+            <i class="fas fa-box me-2"></i>
+            {{ produit.nom }}
+        </div>
+        <div class="subtitle">
+            <span class="status-badge status-{% if produit.actif %}actif{% else %}inactif{% endif %}">
+                {% if produit.actif %}Actif{% else %}Inactif{% endif %}
+            </span>
+            <span class="mx-3">|</span>
+            <i class="fas fa-calendar me-1"></i> 
+            Créé le {{ produit.date_creation|date:"d/m/Y" }}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Image du produit -->
+        {% if produit.image %}
+        <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h5>Image du produit</h5>
+                </div>
+                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-image">
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Informations principales -->
+        <div class="col-lg-{% if produit.image %}8{% else %}6{% endif %} col-md-{% if produit.image %}6{% else %}12{% endif %}">
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h5>Informations générales</h5>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Prix unitaire</span>
+                    <span class="info-value price-display">{{ produit.prix }} DH</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Stock disponible</span>
+                    <div class="info-value">
+                        <span class="stock-indicator {% if produit.stock > 10 %}stock-ok{% elif produit.stock > 0 %}stock-low{% else %}stock-out{% endif %}">
+                            {{ produit.stock }} {{ produit.unite }}
+                        </span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Catégorie</span>
+                    <span class="info-value">{{ produit.get_categorie_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Unité de mesure</span>
+                    <span class="info-value">{{ produit.unite }}</span>
+                </div>
+                {% if produit.formule_chimique %}
+                <div class="info-row">
+                    <span class="info-label">Formule chimique</span>
+                    <span class="info-value">{{ produit.formule_chimique }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Informations complémentaires -->
+        {% if not produit.image %}
+        <div class="col-lg-6 col-md-12">
+        {% else %}
+        <div class="col-lg-12 col-md-12">
+        {% endif %}
+            {% if produit.description %}
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="icon">
+                        <i class="fas fa-align-left"></i>
+                    </div>
+                    <h5>Description</h5>
+                </div>
+                <div class="info-row">
+                    <div class="info-value w-100">{{ produit.description|linebreaks }}</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Historique des commandes -->
+    <div class="info-card">
+        <div class="card-header">
+            <div class="icon">
+                <i class="fas fa-history"></i>
+            </div>
+            <h5>Historique des commandes</h5>
+        </div>
+        
+        {% if details_commande %}
+        <div class="orders-table">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                            <th>Quantité</th>
+                            <th>Prix unitaire</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detail in details_commande %}
+                        <tr>
+                            <td><strong>{{ detail.commande.numero_commande }}</strong></td>
+                            <td>{{ detail.commande.client.raison_sociale }}</td>
+                            <td>{{ detail.commande.date_commande|date:"d/m/Y" }}</td>
+                            <td>{{ detail.quantite }} {{ produit.unite }}</td>
+                            <td><strong>{{ detail.prix_unitaire }} DH</strong></td>
+                            <td>
+                                <span class="order-status status-{{ detail.commande.statut }}">
+                                    {{ detail.commande.get_statut_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'commande_detail' detail.commande.pk %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Voir
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <h4>Aucune commande</h4>
+            <p>Ce produit n'a pas encore été commandé.</p>
+            <a href="{% url 'commande_create' %}?produit={{ produit.pk }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Créer une première commande
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <a href="{% url 'produit_update' produit.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit me-2"></i>Modifier le produit
+        </a>
+        <a href="{% url 'commande_create' %}?produit={{ produit.pk }}" class="btn btn-primary">
+            <i class="fas fa-shopping-cart me-2"></i>Commander ce produit
+        </a>
+        <a href="{% url 'produit_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+{% endblock %}

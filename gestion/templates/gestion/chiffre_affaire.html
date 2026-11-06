@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chiffre d'affaire{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Chiffre d'affaire</h2>
+
+    <!-- CA total -->
+    <div class="alert alert-success">
+        <strong>Total global :</strong> {{ ca_total }} DH
+    </div>
+
+    <!-- CA mensuel -->
+    <h4>CA mensuel ({{ current_year }})</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mois</th>
+                <th>Total (DH)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ca_mensuel %}
+            <tr>
+                <td>{{ item.mois }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Aucune commande livrée cette année.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- CA annuel -->
+    <h4>CA annuel</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Année</th>
+                <th>Total (DH)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ca_annuel %}
+            <tr>
+                <td>{{ item.annee }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Aucune donnée disponible.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Graphique -->
+    <h4 class="mt-5">Graphique du CA mensuel</h4>
+    <canvas id="myChart" width="400" height="150"></canvas>
+
+    <!-- Données cachées pour JavaScript -->
+    <div id="chart-data" style="display:none;">
+        {% for item in ca_mensuel %}
+            <span class="chart-label">Mois {{ item.mois }}</span>
+            <span class="chart-value">{{ item.total }}</span>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Récupérer les données depuis le HTML
+var labels = [];
+var data = [];
+
+var labelElements = document.querySelectorAll('.chart-label');
+var valueElements = document.querySelectorAll('.chart-value');
+
+for (var i = 0; i < labelElements.length; i++) {
+    labels.push(labelElements[i].textContent);
+    data.push(parseInt(valueElements[i].textContent));
+}
+
+// Créer le graphique
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'CA (DH)',
+            data: data,
+            backgroundColor: '#007bff'
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

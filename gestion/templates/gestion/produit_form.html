@@ -1,0 +1,665 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - VocaNégoce{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2d5a3d;
+        --primary-light: #4a7c59;
+        --accent-color: #197b30;
+        --success-color: #177940;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --light-bg: #f8fafb;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+    }
+
+    .form-container {
+        padding: 2rem 0;
+        min-height: 100vh;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+    }
+
+    .form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(50px, -50px);
+    }
+
+    .form-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-header .subtitle {
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    }
+
+    .form-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid #f1f3f4;
+    }
+
+    .section-title .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.8rem;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        margin-right: 0.5rem;
+        color: var(--primary-light);
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: #fafbfc;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 90, 61, 0.25);
+        outline: none;
+        background: white;
+        transform: translateY(-1px);
+    }
+
+    .form-control:hover,
+    .form-select:hover {
+        border-color: var(--primary-light);
+        background: white;
+    }
+
+    /* Textarea styling */
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .btn {
+        border-radius: 25px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: var(--transition);
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(45, 90, 61, 0.3);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        color: white;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        font-style: italic;
+        padding-left: 1rem;
+        border-left: 2px solid #e9ecef;
+    }
+
+    .required-field::after {
+        content: " *";
+        color: var(--danger-color);
+        font-weight: bold;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Error states */
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    .text-danger {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Input group styling for price */
+    .input-group-text {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border: 2px solid var(--primary-color);
+        color: white;
+        font-weight: bold;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .input-group .form-control {
+        border-right: none;
+        border-radius: 10px 0 0 10px;
+    }
+
+    .input-group .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: none;
+    }
+
+    /* Image preview styling */
+    .image-preview {
+        text-align: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
+
+    .img-thumbnail {
+        border-radius: 10px;
+        border: 2px solid var(--primary-color);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+    }
+
+    .img-thumbnail:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Checkbox styling */
+    .form-check {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 2px solid #e1e5e9;
+        transition: var(--transition);
+    }
+
+    .form-check:hover {
+        border-color: var(--primary-light);
+        background: white;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 90, 61, 0.25);
+    }
+
+    .form-check-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-left: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem 0;
+        }
+        
+        .form-header {
+            padding: 1.5rem;
+        }
+        
+        .form-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .form-body {
+            padding: 1rem;
+        }
+        
+        .form-section {
+            padding: 1rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Animation pour l'entrée */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Custom select styling */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    .form-select:focus {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%232d5a3d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container fade-in">
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>
+                    <i class="fas fa-{% if produit %}edit{% else %}box{% endif %} me-2"></i>
+                    {{ title }}
+                </h1>
+                <p class="subtitle">
+                    {% if produit %}
+                    Modifier les informations du produit
+                    {% else %}
+                    Ajouter un nouveau produit au catalogue
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="form-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Informations générales -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            Informations générales
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="{{ form.nom.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-tag"></i>{{ form.nom.label }}
+                                    </label>
+                                    {{ form.nom }}
+                                    {% if form.nom.errors %}
+                                    <div class="text-danger">{{ form.nom.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        <i class="fas fa-align-left"></i>{{ form.description.label }}
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                    <div class="text-danger">{{ form.description.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                                        <i class="fas fa-image"></i>{{ form.image.label }}
+                                    </label>
+                                    {{ form.image }}
+                                    {% if form.image.errors %}
+                                    <div class="text-danger">{{ form.image.errors.0 }}</div>
+                                    {% endif %}
+                                    {% if produit and produit.image %}
+                                    <div class="image-preview">
+                                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" 
+                                             class="img-thumbnail" style="max-width: 150px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        {{ form.actif }}
+                                        <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                            <i class="fas fa-toggle-on"></i>{{ form.actif.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.actif.errors %}
+                                    <div class="text-danger">{{ form.actif.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Catégorisation -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            Catégorisation
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="{{ form.categorie.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-folder-open"></i>{{ form.categorie.label }}
+                                    </label>
+                                    {{ form.categorie }}
+                                    {% if form.categorie.errors %}
+                                    <div class="text-danger">{{ form.categorie.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.unite.id_for_label }}" class="form-label">
+                                        <i class="fas fa-ruler"></i>{{ form.unite.label }}
+                                    </label>
+                                    {{ form.unite }}
+                                    {% if form.unite.errors %}
+                                    <div class="text-danger">{{ form.unite.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if form.formule_chimique %}
+                        <div class="form-group">
+                            <label for="{{ form.formule_chimique.id_for_label }}" class="form-label">
+                                <i class="fas fa-flask"></i>{{ form.formule_chimique.label }}
+                            </label>
+                            {{ form.formule_chimique }}
+                            {% if form.formule_chimique.errors %}
+                            <div class="text-danger">{{ form.formule_chimique.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">
+                                Formule chimique du produit (si applicable)
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Gestion financière et stock -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            Gestion financière et stock
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.prix.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-euro-sign"></i>{{ form.prix.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.prix }}
+                                        <span class="input-group-text">DH</span>
+                                    </div>
+                                    {% if form.prix.errors %}
+                                    <div class="text-danger">{{ form.prix.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.stock.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-boxes"></i>{{ form.stock.label }}
+                                    </label>
+                                    {{ form.stock }}
+                                    {% if form.stock.errors %}
+                                    <div class="text-danger">{{ form.stock.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.seuil_alerte.id_for_label }}" class="form-label">
+                                        <i class="fas fa-exclamation-triangle"></i>{{ form.seuil_alerte.label }}
+                                    </label>
+                                    {{ form.seuil_alerte }}
+                                    {% if form.seuil_alerte.errors %}
+                                    <div class="text-danger">{{ form.seuil_alerte.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text">
+                                        Alerte quand le stock descend en dessous de cette valeur
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'produit_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if produit %}Sauvegarder les modifications{% else %}Créer le produit{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Prévisualisation de l'image
+    const imageInput = document.getElementById('id_image');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let preview = document.querySelector('.img-thumbnail');
+                    let previewContainer = document.querySelector('.image-preview');
+                    
+                    if (!preview) {
+                        // Créer le conteneur de prévisualisation s'il n'existe pas
+                        if (!previewContainer) {
+                            previewContainer = document.createElement('div');
+                            previewContainer.className = 'image-preview';
+                            imageInput.parentNode.appendChild(previewContainer);
+                        }
+                        
+                        // Créer l'élément image
+                        preview = document.createElement('img');
+                        preview.className = 'img-thumbnail';
+                        preview.style.maxWidth = '150px';
+                        previewContainer.appendChild(preview);
+                    }
+                    
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Validation en temps réel
+    const form = document.querySelector('form');
+    const requiredFields = form.querySelectorAll('[required]');
+    
+    requiredFields.forEach(field => {
+        field.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+
+    // Animation d'entrée échelonnée pour les sections
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+{% endblock %}

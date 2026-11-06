@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Assistant IA ElevenLabs - VocaNégoce{% endblock %}
+
+{% block extra_css %}
+<style>
+    .elevenlabs-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .elevenlabs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .elevenlabs-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+    }
+
+    .elevenlabs-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .elevenlabs-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    .elevenlabs-widget-wrapper {
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        margin-bottom: 2rem;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .elevenlabs-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .feature-description {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .context-panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .context-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+
+    .context-title i {
+        margin-right: 0.5rem;
+        color: #667eea;
+    }
+
+    .context-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .context-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #667eea;
+    }
+
+    .context-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .context-value {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .quick-action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .quick-action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .elevenlabs-header h1 {
+            font-size: 2rem;
+        }
+        
+        .elevenlabs-widget-wrapper {
+            padding: 1rem;
+            min-height: 400px;
+        }
+        
+        .quick-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="elevenlabs-page">
+    <div class="container elevenlabs-container">
+        <!-- En-tête -->
+        <div class="elevenlabs-header">
+            <h1>
+                <i class="fas fa-robot me-3"></i>
+                Assistant IA ElevenLabs
+            </h1>
+            <p>
+                Conversez naturellement avec votre assistant IA avancé pour gérer VocaNégoce
+            </p>
+            <div class="quick-actions">
+                <a href="{% url 'dashboard' %}" class="quick-action-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour au tableau de bord
+                </a>
+                <button class="quick-action-btn" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                    Plein écran
+                </button>
+                <button class="quick-action-btn" onclick="resetConversation()">
+                    <i class="fas fa-refresh"></i>
+                    Nouvelle conversation
+                </button>
+            </div>
+        </div>
+
+        <!-- Widget ElevenLabs principal -->
+        <div class="elevenlabs-widget-wrapper" id="mainWidgetWrapper">
+            <elevenlabs-convai 
+                agent-id="agent_0001k1avfh8yeym9b0jgvts4cfzj"
+                style="width: 100%; height: 100%; min-height: 500px;">
+            </elevenlabs-convai>
+        </div>
+
+        <!-- Panneau de contexte -->
+        <div class="context-panel">
+            <div class="context-title">
+                <i class="fas fa-info-circle"></i>
+                Contexte de l'application
+            </div>
+            <div class="context-info">
+                <div class="context-item">
+                    <div class="context-label">Utilisateur</div>
+                    <div class="context-value">{{ user.username }}</div>
+                </div>
+                <div class="context-item">
+                    <div class="context-label">Application</div>
+                    <div class="context-value">VocaNégoce</div>
+                </div>
+                <div class="context-item">
+                    <div class="context-label">Modules disponibles</div>
+                    <div class="context-value">Produits, Clients, Commandes</div>
+                </div>
+                <div class="context-item">
+                    <div class="context-label">Langue</div>
+                    <div class="context-value">Français (FR)</div>
+                </div>
+                <div class="context-item">
+                    <div class="context-label">Statut</div>
+                    <div class="context-value">
+                        <span class="badge bg-success">En ligne</span>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <div class="context-label">Session</div>
+                    <div class="context-value">{{ request.session.session_key|slice:":8" }}...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="elevenlabs-features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="feature-title">Conversation Naturelle</div>
+                <div class="feature-description">
+                    Parlez naturellement avec l'assistant IA comme avec un collègue. 
+                    Il comprend le contexte de votre entreprise et peut vous aider dans vos tâches quotidiennes.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="feature-title">Intelligence Contextuelle</div>
+                <div class="feature-description">
+                    L'assistant connaît vos produits, clients et commandes. 
+                    Il peut répondre à des questions spécifiques sur votre activité.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="feature-title">Actions Automatisées</div>
+                <div class="feature-description">
+                    Demandez à l'assistant d'effectuer des actions comme créer une commande, 
+                    rechercher un client ou générer des rapports.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-title">Analyses et Insights</div>
+                <div class="feature-description">
+                    Obtenez des analyses de vos données, des recommandations 
+                    et des insights pour optimiser votre activité.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration du widget ElevenLabs avec le contexte de l'application
+    const widget = document.querySelector('elevenlabs-convai');
+    
+    if (widget) {
+        // Attendre que le widget soit complètement chargé
+        widget.addEventListener('load', function() {
+            console.log('Widget ElevenLabs chargé');
+            
+            // Configurer le contexte si l'API le permet
+            if (typeof widget.setContext === 'function') {
+                widget.setContext({
+                    user: '{{ user.username }}',
+                    app: 'VocaNégoce',
+                    modules: ['produits', 'clients', 'commandes'],
+                    language: 'fr-FR',
+                    company: 'Entreprise de produits chimiques industriels',
+                    features: [
+                        'Gestion de catalogue produits',
+                        'Gestion clientèle',
+                        'Suivi des commandes',
+                        'Statistiques et rapports'
+                    ]
+                });
+            }
+        });
+
+        // Écouter les événements de conversation
+        widget.addEventListener('conversationStarted', function() {
+            console.log('Conversation démarrée');
+            showNotification('Conversation démarrée avec l\'assistant IA', 'success');
+        });
+
+        widget.addEventListener('conversationEnded', function() {
+            console.log('Conversation terminée');
+            showNotification('Conversation terminée', 'info');
+        });
+
+        // Écouter les messages si l'API le permet
+        widget.addEventListener('message', function(event) {
+            console.log('Message reçu:', event.detail);
+            // Ici vous pourriez logger les conversations ou déclencher des actions
+        });
+    }
+});
+
+function toggleFullscreen() {
+    const wrapper = document.getElementById('mainWidgetWrapper');
+    
+    if (!document.fullscreenElement) {
+        wrapper.requestFullscreen().then(() => {
+            wrapper.style.borderRadius = '0';
+            showNotification('Mode plein écran activé', 'info');
+        }).catch(err => {
+            console.error('Erreur plein écran:', err);
+        });
+    } else {
+        document.exitFullscreen().then(() => {
+            wrapper.style.borderRadius = '2rem';
+            showNotification('Mode plein écran désactivé', 'info');
+        });
+    }
+}
+
+function resetConversation() {
+    const widget = document.querySelector('elevenlabs-convai');
+    if (widget && typeof widget.reset === 'function') {
+        widget.reset();
+        showNotification('Nouvelle conversation démarrée', 'success');
+    } else {
+        // Recharger le widget si pas de méthode reset
+        location.reload();
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 3000);
+}
+
+// Gestion du plein écran
+document.addEventListener('fullscreenchange', function() {
+    const wrapper = document.getElementById('mainWidgetWrapper');
+    if (!document.fullscreenElement) {
+        wrapper.style.borderRadius = '2rem';
+    }
+});
+</script>
+{% endblock %}

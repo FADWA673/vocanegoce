@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Modifier Produit - VocaNégoce{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background-color: #f8f9fa;
+        /* Light gray background */
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .form-card {
+        background-color: #fff;
+        /* White card */
+        border-radius: 15px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        background-color: #28a745;
+        /* Green header */
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .form-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 300;
+    }
+
+    .form-header .subtitle {
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #28a745;
+        /* Green focus border */
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        outline: none;
+    }
+
+    .price-input-group {
+        position: relative;
+    }
+
+    .price-input-group .currency-symbol {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #28a745;
+        /* Green currency */
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background-color: #28a745;
+        /* Green button */
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .form-check-input:checked {
+        background-color: #28a745;
+        /* Green checkbox */
+        border-color: #28a745;
+    }
+
+    .help-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .required-field::after {
+        content: " *";
+        color: #dc3545;
+    }
+
+    .current-image {
+        max-width: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1><i class="fas fa-edit me-2"></i>Modifier Produit</h1>
+                <p class="subtitle">{{ produit.nom }}</p>
+            </div>
+
+            <div class="form-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="{{ form.nom.id_for_label }}" class="form-label required-field">
+                                    <i class="fas fa-tag me-1"></i>{{ form.nom.label }}
+                                </label>
+                                {{ form.nom }}
+                                {% if form.nom.help_text %}
+                                <div class="help-text">{{ form.nom.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.categorie.id_for_label }}" class="form-label required-field">
+                                    <i class="fas fa-folder me-1"></i>{{ form.categorie.label }}
+                                </label>
+                                {{ form.categorie }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>{{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.help_text %}
+                        <div class="help-text">{{ form.description.help_text }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.prix.id_for_label }}" class="form-label required-field">
+                                    <i class="fas fa-money-bill-wave me-1"></i>{{ form.prix.label }}
+                                </label>
+                                <div class="price-input-group">
+                                    {{ form.prix }}
+                                    <span class="currency-symbol">DH</span>
+                                </div>
+                                {% if form.prix.help_text %}
+                                <div class="help-text">{{ form.prix.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.stock.id_for_label }}" class="form-label required-field">
+                                    <i class="fas fa-boxes me-1"></i>{{ form.stock.label }}
+                                </label>
+                                {{ form.stock }}
+                                {% if form.stock.help_text %}
+                                <div class="help-text">{{ form.stock.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.unite.id_for_label }}" class="form-label">
+                                    <i class="fas fa-ruler me-1"></i>{{ form.unite.label }}
+                                </label>
+                                {{ form.unite }}
+                                {% if form.unite.help_text %}
+                                <div class="help-text">{{ form.unite.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="{{ form.image.id_for_label }}" class="form-label">
+                                    <i class="fas fa-image me-1"></i>{{ form.image.label }}
+                                </label>
+                                {{ form.image }}
+                                {% if produit.image %}
+                                <div class="mt-2">
+                                    <p class="text-muted mb-1">Image actuelle :</p>
+                                    <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="current-image">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="form-check mt-4">
+                                    {{ form.actif }}
+                                    <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                        <i class="fas fa-check-circle me-1"></i>{{ form.actif.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'produit_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Sauvegarder les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,562 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - VocaNégoce{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2d5a3d;
+        --primary-light: #4a7c59;
+        --accent-color: #28a745;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --light-bg: #f8fafb;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+    }
+
+    .form-container {
+        padding: 2rem 0;
+        min-height: 100vh;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+    }
+
+    .form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(50px, -50px);
+    }
+
+    .form-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-header .subtitle {
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    }
+
+    .form-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid #f1f3f4;
+    }
+
+    .section-title .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.8rem;
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        margin-right: 0.5rem;
+        color: var(--primary-light);
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: #fafbfc;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 90, 61, 0.25);
+        outline: none;
+        background: white;
+        transform: translateY(-1px);
+    }
+
+    .form-control:hover,
+    .form-select:hover {
+        border-color: var(--primary-light);
+        background: white;
+    }
+
+    /* Textarea styling */
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .btn {
+        border-radius: 25px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: var(--transition);
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(45, 90, 61, 0.3);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        color: white;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        font-style: italic;
+        padding-left: 1rem;
+        border-left: 2px solid #e9ecef;
+    }
+
+    .required-field::after {
+        content: " *";
+        color: var(--danger-color);
+        font-weight: bold;
+    }
+
+    .phone-input-group {
+        position: relative;
+    }
+
+    .phone-input-group .country-code {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        font-weight: bold;
+        z-index: 3;
+        background: white;
+        padding: 0 5px;
+    }
+
+    .phone-input-group .form-control {
+        padding-left: 70px;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Error states */
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+
+    .invalid-feedback {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Success states */
+    .form-control.is-valid,
+    .form-select.is-valid {
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.25);
+    }
+
+    .valid-feedback {
+        color: var(--success-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem 0;
+        }
+        
+        .form-header {
+            padding: 1.5rem;
+        }
+        
+        .form-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .form-body {
+            padding: 1rem;
+        }
+        
+        .form-section {
+            padding: 1rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Animation pour l'entrée */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Floating labels effect */
+    .form-floating {
+        position: relative;
+    }
+
+    .form-floating > .form-control:focus ~ .form-label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ .form-label {
+        opacity: 0.65;
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+
+    /* Custom select styling */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    .form-select:focus {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%232d5a3d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container fade-in">
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>
+                    <i class="fas fa-{% if client %}edit{% else %}user-plus{% endif %} me-2"></i>
+                    {{ title }}
+                </h1>
+                <p class="subtitle">
+                    {% if client %}
+                    Modifier les informations du client
+                    {% else %}
+                    Ajouter un nouveau client à votre portefeuille
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="form-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Informations générales -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            Informations générales
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="{{ form.raison_sociale.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-building"></i>{{ form.raison_sociale.label }}
+                                    </label>
+                                    {{ form.raison_sociale }}
+                                    {% if form.raison_sociale.help_text %}
+                                    <div class="help-text">{{ form.raison_sociale.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.siret.id_for_label }}" class="form-label">
+                                        <i class="fas fa-id-card"></i>{{ form.siret.label }}
+                                    </label>
+                                    {{ form.siret }}
+                                    {% if form.siret.help_text %}
+                                    <div class="help-text">{{ form.siret.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.contact.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-user"></i>{{ form.contact.label }}
+                                    </label>
+                                    {{ form.contact }}
+                                    {% if form.contact.help_text %}
+                                    <div class="help-text">{{ form.contact.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.statut.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-toggle-on"></i>{{ form.statut.label }}
+                                    </label>
+                                    {{ form.statut }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coordonnées -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-address-book"></i>
+                            </div>
+                            Coordonnées
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label required-field">
+                                        <i class="fas fa-envelope"></i>{{ form.email.label }}
+                                    </label>
+                                    {{ form.email }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.telephone.id_for_label }}" class="form-label">
+                                        <i class="fas fa-phone"></i>{{ form.telephone.label }}
+                                    </label>
+                                    <div class="phone-input-group">
+                                        <span class="country-code">+212</span>
+                                        {{ form.telephone }}
+                                    </div>
+                                    {% if form.telephone.help_text %}
+                                    <div class="help-text">{{ form.telephone.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            Adresse
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.adresse.id_for_label }}" class="form-label">
+                                <i class="fas fa-home"></i>{{ form.adresse.label }}
+                            </label>
+                            {{ form.adresse }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="{{ form.ville.id_for_label }}" class="form-label">
+                                        <i class="fas fa-city"></i>{{ form.ville.label }}
+                                    </label>
+                                    {{ form.ville }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.code_postal.id_for_label }}" class="form-label">
+                                        <i class="fas fa-mail-bulk"></i>{{ form.code_postal.label }}
+                                    </label>
+                                    {{ form.code_postal }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="icon">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                            Notes complémentaires
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                <i class="fas fa-comment"></i>{{ form.notes.label }}
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.help_text %}
+                            <div class="help-text">{{ form.notes.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'client_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if client %}Sauvegarder les modifications{% else %}Créer le client{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

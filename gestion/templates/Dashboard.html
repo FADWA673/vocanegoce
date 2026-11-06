@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de Bord - VocaNégoce{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête du tableau de bord -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                        Tableau de Bord
+                    </h1>
+                    <p class="text-muted">Bienvenue dans votre système de gestion d'entreprise</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        {{ "now"|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Cartes de statistiques -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Produits
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.total_produits }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Clients Actifs
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.clients_actifs }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Commandes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.total_commandes }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Chiffre d'Affaires
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.ca_total|floatformat:2 }} DH
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Alertes -->
+    <div class="row mb-4">
+        {% if stats.produits_stock_faible > 0 %}
+        <div class="col-12 mb-3">
+            <div class="alert alert-danger d-flex align-items-center shadow-sm" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div>
+                    <strong>Attention !</strong> {{ stats.produits_stock_faible }} produit(s) sont en dessous de leur stock minimum défini.
+                    <a href="{% url 'produit_list' %}?stock_faible=on" class="alert-link ms-2">Voir les produits</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if stats.commandes_en_attente > 0 %}
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center shadow-sm" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>
+                    {{ stats.commandes_en_attente }} commande(s) en attente de traitement.
+                    <a href="{% url 'commande_list' %}?statut=en_attente" class="alert-link ms-2">Voir les commandes</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <!-- Navigation rapide -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">
+                <i class="fas fa-rocket me-2 text-primary"></i>
+                Actions Rapides
+            </h4>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-plus-circle fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Nouveau Produit</h5>
+                    <p class="card-text text-muted">Ajouter un nouveau produit au catalogue</p>
+                    <a href="{% url 'produit_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Créer
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-plus fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Nouveau Client</h5>
+                    <p class="card-text text-muted">Enregistrer un nouveau client</p>
+                    <a href="{% url 'client_create' %}" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Créer
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-shopping-cart fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Nouvelle Commande</h5>
+                    <p class="card-text text-muted">Créer une nouvelle commande client</p>
+                    <a href="{% url 'commande_create' %}" class="btn btn-info">
+                        <i class="fas fa-plus me-1"></i>Créer
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+    <a href="{% url 'chiffre_affaire' %}" class="btn btn-primary">
+        <i class="fas fa-chart-bar"></i> Voir le chiffre d'affaire
+    </a>
+</div>
+    </div>
+    <!-- Activités récentes -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-clock me-2"></i>
+                        Dernières Commandes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dernieres_commandes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for commande in dernieres_commandes %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'commande_detail' commande.pk %}" class="text-decoration-none text-primary">
+                                            <strong>{{ commande.numero_commande }}</strong>
+                                        </a>
+                                    </td>
+                                    <td>{{ commande.client.raison_sociale }}</td>
+                                    <td>{{ commande.date_commande|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <span class="badge {% if commande.statut == 'livree' %}bg-success{% elif commande.statut == 'en_cours' %}bg-primary{% elif commande.statut == 'en_attente' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            {{ commande.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td><strong>{{ commande.total|floatformat:2 }} DH</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'commande_list' %}" class="btn btn-outline-primary btn-sm">
+                            Voir toutes les commandes
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Aucune commande pour le moment</p>
+                        <a href="{% url 'commande_create' %}" class="btn btn-primary">
+                            Créer la première commande
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Stock Faible
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if produits_stock_faible %}
+                    <div class="list-group list-group-flush">
+                        {% for produit in produits_stock_faible %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-1">{{ produit.nom }}</h6>
+                                <small class="text-muted">
+                                    {{ produit.get_categorie_display }}<br>
+                                    ⚠️ Seuil : {{ produit.seuil_minimum }}
+                                </small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">{{ produit.stock }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'produit_list' %}?stock_faible=on" class="btn btn-outline-danger btn-sm">
+                            Voir tous les produits
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="text-muted">Tous les stocks sont OK</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

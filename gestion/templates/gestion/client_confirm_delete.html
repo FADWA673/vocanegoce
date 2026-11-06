@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supprimer Client - VocaNégoce{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <!-- En-tête moderne -->
+    <div class="detail-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1><i class="fas fa-user-times me-3"></i>Suppression Client</h1>
+                    <p class="subtitle mb-0">Confirmation de suppression pour {{ client.raison_sociale }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="detail-card shadow-lg" style="border-left: 5px solid #dc3545;">
+                    <div class="detail-card-header bg-danger text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Confirmer la Suppression du Client
+                        </h4>
+                    </div>
+                    <div class="detail-card-body">
+                        <!-- Avertissement principal -->
+                        <div class="alert alert-warning border-0 mb-4" style="background: linear-gradient(135deg, #fff3cd 0%, #fef7e0 100%);">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Action Irréversible</h6>
+                                    <p class="mb-0">Cette suppression ne peut pas être annulée</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Information client -->
+                        <div class="text-center mb-4">
+                            <div class="p-4 rounded mb-3" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                                <i class="fas fa-user" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                                <h5 class="mb-0">{{ client.raison_sociale }}</h5>
+                            </div>
+                            
+                            <p class="lead">
+                                Êtes-vous sûr de vouloir supprimer le client <strong>"{{ client.raison_sociale }}"</strong> ?
+                            </p>
+                        </div>
+
+                        <!-- Conséquences -->
+                        <div class="alert alert-info border-0 mb-4" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-info-circle text-info me-3 mt-1"></i>
+                                <div>
+                                    <p class="mb-0">
+                                        Cette action est irréversible et supprimera également toutes les commandes associées à ce client.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation -->
+                        <div class="alert alert-danger border-0 mb-4" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label fw-bold" for="confirmDelete">
+                                    Je comprends que cette action est irréversible
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <form method="post" class="text-center">
+                            {% csrf_token %}
+                            <div class="action-buttons">
+                                <a href="{% url 'client_detail' client.pk %}" class="action-btn btn btn-outline-primary">
+                                    <i class="fas fa-times-circle me-2"></i>Annuler
+                                </a>
+                                <button type="submit" class="action-btn btn-danger-gradient" id="deleteBtn" disabled>
+                                    <i class="fas fa-trash-alt me-2"></i>Confirmer la Suppression
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Styles spécifiques pour la page de suppression client simple */
+.form-check-input:checked {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+#deleteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#deleteBtn:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
+}
+
+.alert-heading {
+    color: inherit;
+    font-weight: 600;
+}
+
+/* Animation pour attirer l'attention sur le bouton de suppression */
+@keyframes danger-pulse {
+    0% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+    50% { box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5); }
+    100% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+}
+
+#deleteBtn:not(:disabled):hover {
+    animation: danger-pulse 1.5s infinite;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    
+    if (checkbox && deleteBtn) {
+        checkbox.addEventListener('change', function() {
+            deleteBtn.disabled = !this.checked;
+        });
+    }
+    
+    // Confirmation supplémentaire au clic
+    deleteBtn.addEventListener('click', function(e) {
+        if (!confirm('DERNIÈRE CONFIRMATION : Voulez-vous vraiment supprimer ce client de façon définitive ?')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
